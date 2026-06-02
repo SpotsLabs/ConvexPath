@@ -307,23 +307,23 @@
             const startY = pad + C;
 
             // 5. Fluid Path Construction - (Mathematical Perfection)
-            const d = \`
-M \${startX},\${startY}
-c \${w_mid / 3},-\${C} \${w_mid * 2 / 3},-\${C} \${w_mid},0
-c \${R * K1},\${C * K4} \${R * K2},\${R * K3} \${R},\${R}
-c \${C},\${h_mid / 3} \${C},\${h_mid * 2 / 3} 0,\${h_mid}
-c -\${C * K4},\${R * K1} -\${R * K3},\${R * K2} -\${R},\${R}
-c -\${w_mid / 3},\${C} -\${w_mid * 2 / 3},\${C} -\${w_mid},0
-c -\${R * K1},-\${C * K4} -\${R * K2},-\${R * K3} -\${R},-\${R}
-c -\${C},-\${h_mid / 3} -\${C},-\${h_mid * 2 / 3} 0,-\${h_mid}
-c \${C * K4},-\${R * K1} \${R * K3},-\${R * K2} \${R},-\${R}
-Z\`.trim();
+            const d = `
+M ${startX},${startY}
+c ${w_mid / 3},-${C} ${w_mid * 2 / 3},-${C} ${w_mid},0
+c ${R * K1},${C * K4} ${R * K2},${R * K3} ${R},${R}
+c ${C},${h_mid / 3} ${C},${h_mid * 2 / 3} 0,${h_mid}
+c -${C * K4},${R * K1} -${R * K3},${R * K2} -${R},${R}
+c -${w_mid / 3},${C} -${w_mid * 2 / 3},${C} -${w_mid},0
+c -${R * K1},-${C * K4} -${R * K2},-${R * K3} -${R},-${R}
+c -${C},-${h_mid / 3} -${C},-${h_mid * 2 / 3} 0,-${h_mid}
+c ${C * K4},-${R * K1} ${R * K3},-${R * K2} ${R},-${R}
+Z`.trim();
 
             // 6. Render Path to Screen
             svgElement.setAttribute('width', svgWidth);
             svgElement.setAttribute('height', svgHeight);
-            svgElement.setAttribute('viewBox', \`0 0 \${svgWidth} \${svgHeight}\`);
-            pathElement.setAttribute('d', d.replace(/\\s+/g, ' '));
+            svgElement.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+            pathElement.setAttribute('d', d.replace(/\s+/g, ' '));
         }
 
         // Update live (real-time) as inputs change
@@ -334,16 +334,16 @@ Z\`.trim();
         // "Generate" Button Logic
         document.getElementById('btn-generate').addEventListener('click', () => {
             // Generate independent code for the visible SVG
-            const finalSVG = \`
-<svg width="\${svgElement.getAttribute('width')}" height="\${svgElement.getAttribute('height')}" viewBox="\${svgElement.getAttribute('viewBox')}" xmlns="http://www.w3.org/2000/svg">
+            const finalSVG = `
+<svg width="${svgElement.getAttribute('width')}" height="${svgElement.getAttribute('height')}" viewBox="${svgElement.getAttribute('viewBox')}" xmlns="http://www.w3.org/2000/svg">
   <path 
-    d="\${pathElement.getAttribute('d')}" 
+    d="${pathElement.getAttribute('d')}" 
     fill="none" 
     stroke="#bef0c6" 
     stroke-width="1.5" 
     stroke-linejoin="round"
   />
-</svg>\`.trim();
+</svg>`.trim();
 
             codeOutput.value = finalSVG;
             codePanel.classList.add('active');
