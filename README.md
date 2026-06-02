@@ -1,9 +1,9 @@
-# ConvexPath 🔶
+# ConvexPath 🔶 | G2 UI Card Generator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![SpotsLabs](https://img.shields.io/badge/Built_by-SpotsLabs-06b6d4?style=flat-square)](https://spotslabs.com)
 
-ConvexPath is a parametric and fluid G2 SVG generator. It allows you to create perfectly smooth, continuous "squircle" shapes by adjusting width, height, corner radius, and convexity in real-time.
+ConvexPath is a parametric and fluid G2 SVG shape generator, purpose-built for **UI/UX Designers**. It allows you to create perfectly smooth, continuous "squircle" cards and UI components by adjusting width, height, corner radius, and convexity in real-time.
 
 > **[Live Demo: Try ConvexPath Here](https://spotslabs.github.io/ConvexPath)**
 
