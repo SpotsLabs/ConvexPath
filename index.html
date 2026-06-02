@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConvexPath Generator</title>
+    <style>
+        /* General UI - Premium Dark Mode Aesthetics */
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --accent: #06b6d4;
+            /* Cyan-500 */
+            --accent-hover: #0891b2;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --card-stroke: #bef0c6;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Left Panel - Controls */
+        .sidebar {
+            width: 320px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .header h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+        .header p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Right Panel - Preview and Code Output */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+        }
+
+        .canvas-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Breathing room around the card */
+            padding: 40px;
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+        }
+
+        .card-path {
+            fill: rgba(190, 240, 198, 0.05);
+            stroke: var(--card-stroke);
+            stroke-width: 1.5;
+            transition: all 0.2s ease;
+        }
+
+        /* Code Output Area */
+        .code-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 250px;
+            background: #1e1e1e;
+            border-top: 1px solid var(--border-color);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-panel.active {
+            transform: translateY(0);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: #252526;
+            border-bottom: 1px solid #333;
+        }
+
+        .code-header span {
+            font-size: 0.9rem;
+            color: #d4d4d4;
+            font-family: monospace;
+        }
+
+        .code-header button {
+            margin: 0;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .code-header button:hover {
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        #close-code {
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            margin-left: 10px;
+        }
+
+        textarea {
+            flex: 1;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px 20px;
+            border: none;
+            resize: none;
+            font-family: monospace;
+            font-size: 0.9rem;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="header">
+            <h2>ConvexPath</h2>
+            <p>Parametric and fluid G2 SVG generator. Adjust width, height, corner radius, and convexity.</p>
+        </div>
+
+        <div class="input-group">
+            <label>Width (W - px)</label>
+            <input type="number" id="inp-w" value="300" min="50">
+        </div>
+
+        <div class="input-group">
+            <label>Height (H - px)</label>
+            <input type="number" id="inp-h" value="180" min="50">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="input-group">
+            <label>Corner Radius (px)</label>
+            <input type="number" id="inp-r" value="24" min="0">
+        </div>
+
+        <div class="input-group">
+            <label>Convexity (Deviation - px)</label>
+            <input type="number" id="inp-c" value="3" min="0">
+        </div>
+
+        <div class="divider"></div>
+
+        <button id="btn-generate">Generate SVG Code</button>
+    </div>
+
+    <div class="preview-area">
+        <div class="canvas-container" id="canvas">
+            <!-- SVG will be drawn dynamically here -->
+            <svg id="preview-svg" xmlns="http://www.w3.org/2000/svg">
+                <path id="preview-path" class="card-path" d="" />
+            </svg>
+        </div>
+
+        <div class="code-panel" id="code-panel">
+            <div class="code-header">
+                <span>output.svg</span>
+                <div>
+                    <button id="copy-code">Copy Code</button>
+                    <button id="close-code">Close</button>
+                </div>
+            </div>
+            <textarea id="code-output" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ENGINE: G2 Continuous Parametric Calculator
+         * The seamless formula implemented as a JS function.
+         */
+        const inputs = {
+            w: document.getElementById('inp-w'),
+            h: document.getElementById('inp-h'),
+            r: document.getElementById('inp-r'),
+            c: document.getElementById('inp-c')
+        };
+
+        const svgElement = document.getElementById('preview-svg');
+        const pathElement = document.getElementById('preview-path');
+        const codePanel = document.getElementById('code-panel');
+        const codeOutput = document.getElementById('code-output');
+
+        // G2 Continuity Coefficients (Calibrated for smooth curves)
+        const K1 = 0.61;
+        const K2 = 0.92;
+        const K3 = 0.47;
+        const K4 = 0.5; // Special coefficient blending convexity and corners
+
+        function updateCard() {
+            // 1. Get and Bound Values
+            let W = parseFloat(inputs.w.value) || 0;
+            let H = parseFloat(inputs.h.value) || 0;
+            let R = parseFloat(inputs.r.value) || 0;
+            let C = parseFloat(inputs.c.value) || 0;
+
+            // Radius limitation to prevent overlap (Cannot be larger than half the edge)
+            const maxR = Math.min(W / 2, H / 2);
+            if (R > maxR) R = maxR;
+
+            // 2. Center "Flat/Stretch" Areas for 9-Slice Extension
+            const w_mid = Math.max(0, W - (R * 2));
+            const h_mid = Math.max(0, H - (R * 2));
+
+            // 3. Safety Padding (To prevent stroke clipping)
+            const pad = 10;
+
+            // Total SVG Size (Body + Convex Overflows + Padding)
+            const svgWidth = W + (C * 2) + (pad * 2);
+            const svgHeight = H + (C * 2) + (pad * 2);
+
+            // 4. Starting Point (Right side of Top Left Corner)
+            const startX = pad + C + R;
+            const startY = pad + C;
+
+            // 5. Fluid Path Construction - (Mathematical Perfection)
+            const d = \`
+M \${startX},\${startY}
+c \${w_mid / 3},-\${C} \${w_mid * 2 / 3},-\${C} \${w_mid},0
+c \${R * K1},\${C * K4} \${R * K2},\${R * K3} \${R},\${R}
+c \${C},\${h_mid / 3} \${C},\${h_mid * 2 / 3} 0,\${h_mid}
+c -\${C * K4},\${R * K1} -\${R * K3},\${R * K2} -\${R},\${R}
+c -\${w_mid / 3},\${C} -\${w_mid * 2 / 3},\${C} -\${w_mid},0
+c -\${R * K1},-\${C * K4} -\${R * K2},-\${R * K3} -\${R},-\${R}
+c -\${C},-\${h_mid / 3} -\${C},-\${h_mid * 2 / 3} 0,-\${h_mid}
+c \${C * K4},-\${R * K1} \${R * K3},-\${R * K2} \${R},-\${R}
+Z\`.trim();
+
+            // 6. Render Path to Screen
+            svgElement.setAttribute('width', svgWidth);
+            svgElement.setAttribute('height', svgHeight);
+            svgElement.setAttribute('viewBox', \`0 0 \${svgWidth} \${svgHeight}\`);
+            pathElement.setAttribute('d', d.replace(/\\s+/g, ' '));
+        }
+
+        // Update live (real-time) as inputs change
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', updateCard);
+        });
+
+        // "Generate" Button Logic
+        document.getElementById('btn-generate').addEventListener('click', () => {
+            // Generate independent code for the visible SVG
+            const finalSVG = \`
+<svg width="\${svgElement.getAttribute('width')}" height="\${svgElement.getAttribute('height')}" viewBox="\${svgElement.getAttribute('viewBox')}" xmlns="http://www.w3.org/2000/svg">
+  <path 
+    d="\${pathElement.getAttribute('d')}" 
+    fill="none" 
+    stroke="#bef0c6" 
+    stroke-width="1.5" 
+    stroke-linejoin="round"
+  />
+</svg>\`.trim();
+
+            codeOutput.value = finalSVG;
+            codePanel.classList.add('active');
+        });
+
+        // "Copy Code" Button
+        document.getElementById('copy-code').addEventListener('click', () => {
+            codeOutput.select();
+            document.execCommand('copy');
+            const btn = document.getElementById('copy-code');
+            btn.innerText = "Copied!";
+            setTimeout(() => btn.innerText = "Copy Code", 2000);
+        });
+
+        // "Close" Button
+        document.getElementById('close-code').addEventListener('click', () => {
+            codePanel.classList.remove('active');
+        });
+
+        // Initialize drawing on first load
+        updateCard();
+    </script>
+</body>
+
+</html>
