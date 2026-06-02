@@ -37,7 +37,7 @@ This project was born out of a real necessity during a UI design process at **Sp
 
 We built ConvexPath to solve our own problem, and now we are opening it up to the entire community! 
 
-We are a technology studio dedicated to pushing the boundaries of web development, UI/UX design, and architectural software solutions. **[Visit SpotsLabs.com](https://spotslabs.com)** to learn more about our work and mission.
+**[Visit SpotsLabs.com](https://spotslabs.com)** to learn more about our work and mission.
 
 ## 🤝 Contributing
 
