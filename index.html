@@ -143,6 +143,20 @@
             align-items: center;
         }
 
+        .color-label-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-label-wrap input[type="checkbox"] {
+            margin: 0;
+            accent-color: var(--accent);
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
         .color-group label {
             font-size: 0.85rem;
             font-weight: 500;
@@ -269,12 +283,18 @@
         <div class="divider"></div>
 
         <div class="color-group">
-            <label>Stroke Color</label>
+            <div class="color-label-wrap">
+                <input type="checkbox" id="chk-stroke" checked>
+                <label for="chk-stroke">Stroke Color</label>
+            </div>
             <input type="color" id="inp-stroke" value="#bef0c6">
         </div>
 
         <div class="color-group" style="margin-top: 10px;">
-            <label>Fill Color</label>
+            <div class="color-label-wrap">
+                <input type="checkbox" id="chk-fill" checked>
+                <label for="chk-fill">Fill Color</label>
+            </div>
             <input type="color" id="inp-fill" value="#1e293b">
         </div>
 
@@ -314,7 +334,9 @@
             r: document.getElementById('inp-r'),
             c: document.getElementById('inp-c'),
             stroke: document.getElementById('inp-stroke'),
-            fill: document.getElementById('inp-fill')
+            fill: document.getElementById('inp-fill'),
+            chkStroke: document.getElementById('chk-stroke'),
+            chkFill: document.getElementById('chk-fill')
         };
 
         const svgElement = document.getElementById('preview-svg');
@@ -374,8 +396,11 @@ Z`.trim();
             pathElement.setAttribute('d', d.replace(/\s+/g, ' '));
             
             // 7. Apply Colors
-            pathElement.setAttribute('stroke', inputs.stroke.value);
-            pathElement.setAttribute('fill', inputs.fill.value);
+            const strokeVal = inputs.chkStroke.checked ? inputs.stroke.value : "none";
+            const fillVal = inputs.chkFill.checked ? inputs.fill.value : "none";
+            
+            pathElement.setAttribute('stroke', strokeVal);
+            pathElement.setAttribute('fill', fillVal);
         }
 
         // Update live (real-time) as inputs change
@@ -385,13 +410,16 @@ Z`.trim();
 
         // "Generate" Button Logic
         document.getElementById('btn-generate').addEventListener('click', () => {
+            const strokeVal = inputs.chkStroke.checked ? inputs.stroke.value : "none";
+            const fillVal = inputs.chkFill.checked ? inputs.fill.value : "none";
+
             // Generate independent code for the visible SVG
             const finalSVG = `
 <svg width="${svgElement.getAttribute('width')}" height="${svgElement.getAttribute('height')}" viewBox="${svgElement.getAttribute('viewBox')}" xmlns="http://www.w3.org/2000/svg">
   <path 
     d="${pathElement.getAttribute('d')}" 
-    fill="${inputs.fill.value}" 
-    stroke="${inputs.stroke.value}" 
+    fill="${fillVal}" 
+    stroke="${strokeVal}" 
     stroke-width="1.5" 
     stroke-linejoin="round"
   />
