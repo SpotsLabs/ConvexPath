@@ -9,8 +9,9 @@ ConvexPath is a parametric and fluid G2 SVG shape generator, purpose-built for *
 
 ## 🌟 Features
 
-- **Real-Time Preview**: Instantly see changes as you adjust parameters.
+- **Real-Time Preview**: Instantly see changes as you adjust parameters on a designer dot grid background.
 - **Parametric Generation**: Full control over Width, Height, Corner Radius, and Convexity Deviation.
+- **Color Customization**: Easily pick custom Fill and Stroke colors for your UI cards.
 - **Mathematical Perfection**: Uses G2 Curvature Continuity for flawless, premium aesthetic transitions instead of standard CSS `border-radius`.
 - **Instant SVG Export**: Copies clean, optimized inline SVG code with a single click.
 
