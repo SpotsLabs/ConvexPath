@@ -126,13 +126,47 @@
             padding: 40px;
             border: 1px dashed var(--border-color);
             border-radius: 12px;
+            /* Designer Dot Grid Background */
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: -10px -10px;
         }
 
         .card-path {
-            fill: rgba(190, 240, 198, 0.05);
-            stroke: var(--card-stroke);
             stroke-width: 1.5;
             transition: all 0.2s ease;
+        }
+
+        .color-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .color-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .color-group input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+        }
+
+        .color-group input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-group input[type="color"]::-webkit-color-swatch {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
         }
 
         /* Code Output Area */
@@ -234,6 +268,18 @@
 
         <div class="divider"></div>
 
+        <div class="color-group">
+            <label>Stroke Color</label>
+            <input type="color" id="inp-stroke" value="#bef0c6">
+        </div>
+
+        <div class="color-group" style="margin-top: 10px;">
+            <label>Fill Color</label>
+            <input type="color" id="inp-fill" value="#1e293b">
+        </div>
+
+        <div class="divider"></div>
+
         <button id="btn-generate">Generate SVG Code</button>
     </div>
 
@@ -266,7 +312,9 @@
             w: document.getElementById('inp-w'),
             h: document.getElementById('inp-h'),
             r: document.getElementById('inp-r'),
-            c: document.getElementById('inp-c')
+            c: document.getElementById('inp-c'),
+            stroke: document.getElementById('inp-stroke'),
+            fill: document.getElementById('inp-fill')
         };
 
         const svgElement = document.getElementById('preview-svg');
@@ -324,6 +372,10 @@ Z`.trim();
             svgElement.setAttribute('height', svgHeight);
             svgElement.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
             pathElement.setAttribute('d', d.replace(/\s+/g, ' '));
+            
+            // 7. Apply Colors
+            pathElement.setAttribute('stroke', inputs.stroke.value);
+            pathElement.setAttribute('fill', inputs.fill.value);
         }
 
         // Update live (real-time) as inputs change
@@ -338,8 +390,8 @@ Z`.trim();
 <svg width="${svgElement.getAttribute('width')}" height="${svgElement.getAttribute('height')}" viewBox="${svgElement.getAttribute('viewBox')}" xmlns="http://www.w3.org/2000/svg">
   <path 
     d="${pathElement.getAttribute('d')}" 
-    fill="none" 
-    stroke="#bef0c6" 
+    fill="${inputs.fill.value}" 
+    stroke="${inputs.stroke.value}" 
     stroke-width="1.5" 
     stroke-linejoin="round"
   />
